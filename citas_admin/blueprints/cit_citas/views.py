@@ -42,6 +42,10 @@ def datatable_json():
         consulta = consulta.filter_by(estatus="A")
     if "oficina_id" in request.form:
         consulta = consulta.filter_by(oficina_id=request.form["oficina_id"])
+    if "fecha" in request.form:
+        fecha_inicio = datetime.strptime(request.form["fecha"] + " 00:00:00", "%y-%m-%d %H:%M:%S")
+        fecha_final = datetime.strptime(request.form["fecha"] + " 23:59:59", "%y-%m-%d %H:%M:%S")
+        consulta = consulta.filter(CitCita.inicio >= fecha_inicio).filter(CitCita.inicio <= fecha_final)
     registros = consulta.order_by(CitCita.id.desc()).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -71,10 +75,12 @@ def list_active():
     distrito = None
     filtros = {"estatus": "A"}
 
+    # Si es recepcionista
     if not current_user.can_admin(MODULO):
         oficina = Oficina.query.get_or_404(current_user.oficina_id)
         distrito = Distrito.query.get_or_404(oficina.distrito_id)
         filtros["oficina_id"] = oficina.id
+        filtros["fecha"] = datetime.today().strftime("%y-%m-%d")
 
     return render_template(
         "cit_citas/list.jinja2",
