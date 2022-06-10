@@ -276,7 +276,6 @@ def new():
             apellido_materno=form.apellido_materno.data,
             curp=form.curp.data,
             email=form.email.data,
-            workspace=form.workspace.data,
             puesto=form.puesto.data,
             contrasena=contrasena,
         )
@@ -327,7 +326,6 @@ def edit(usuario_id):
     form.curp.data = usuario.curp
     form.puesto.data = usuario.puesto
     form.email.data = usuario.email  # Read only
-    form.workspace.data = usuario.workspace  # Read only
     form.oficina.data = usuario.oficina
     return render_template("usuarios/edit.jinja2", form=form, usuario=usuario)
 
