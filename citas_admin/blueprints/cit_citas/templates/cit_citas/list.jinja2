@@ -1,6 +1,7 @@
 {% extends 'layouts/app.jinja2' %}
 {% import 'macros/list.jinja2' as list %}
 {% import 'macros/topbar.jinja2' as topbar %}
+{% import 'macros/detail.jinja2' as detail %}
 
 {% block title %}Citas{% endblock %}
 
@@ -14,12 +15,23 @@
 {% endblock %}
 
 {% block content %}
+    {% if not current_user.can_admin('CIT CITAS') %}
+        {% call list.card() %}
+            {{ detail.label_value('Oficina', oficina.compuesto) }}
+            {{ detail.label_value('Distrito', distrito.nombre) }}
+            {{ detail.label_value_big('Hoy es', moment(fecha).format('llll')) }}
+        {% endcall %}
+    {% endif %}
     {% call list.card() %}
         <table id="cit_citas_datatable" class="table {% if estatus == 'B'%}table-dark{% endif %} display nowrap" style="width:100%">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Horario</th>
+                    {% if not current_user.can_admin('CIT CITAS') %}
+                        <th>Cliente</th>
+                        <th>Notas</th>
+                    {% endif %}
                     <th>Servicio</th>
                     <th>Estado</th>
                 </tr>
@@ -29,6 +41,10 @@
 {% endblock %}
 
 {% block custom_javascript %}
+    <script>
+        $(document).ready(function() { moment.locale('es-mx'); });
+    </script>
+    {{ detail.moment_js(moment) }}
     {{ list.config_datatable() }}
     <script>
         configDataTable['ajax']['url'] = '/cit_citas/datatable_json';
@@ -36,6 +52,10 @@
         configDataTable['columns'] = [
             { data: "detalle" },
             { data: "horario" },
+            {% if not current_user.can_admin('CIT CITAS') %}
+                { data: "cliente" },
+                { data: "notas" },
+            {% endif %}
             { data: "servicio" },
             { data: "estado" },
         ];
@@ -47,6 +67,20 @@
                     return '<a href="' + data.url + '">' + data.id + '</a>';
                 }
             }
+            {% if not current_user.can_admin('CIT CITAS') %}
+            ,
+            {
+                targets: 3, // notas
+                data: null,
+                render: function(data, type, row, meta) {
+                    if (data.length > 16)
+                        texto = '<span title="' + data + '">' + data.substr(0, 16) + '…' + '</span>';
+                    else
+                        texto = data;
+                    return texto;
+                }
+            }
+            {% endif %}
         ];
         $('#cit_citas_datatable').DataTable(configDataTable);
     </script>

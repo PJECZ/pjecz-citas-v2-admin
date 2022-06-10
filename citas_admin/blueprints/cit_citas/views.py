@@ -2,6 +2,7 @@
 Cit Citas, vistas
 """
 import json
+from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
@@ -13,6 +14,8 @@ from citas_admin.blueprints.modulos.models import Modulo
 from citas_admin.blueprints.cit_citas.models import CitCita
 from citas_admin.blueprints.permisos.models import Permiso
 from citas_admin.blueprints.usuarios.decorators import permission_required
+from citas_admin.blueprints.oficinas.models import Oficina
+from citas_admin.blueprints.distritos.models import Distrito
 
 MODULO = "CIT CITAS"
 
@@ -37,6 +40,8 @@ def datatable_json():
         consulta = consulta.filter_by(estatus=request.form["estatus"])
     else:
         consulta = consulta.filter_by(estatus="A")
+    if "oficina_id" in request.form:
+        consulta = consulta.filter_by(oficina_id=request.form["oficina_id"])
     registros = consulta.order_by(CitCita.id.desc()).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
@@ -48,7 +53,9 @@ def datatable_json():
                     "id": cita.id,
                     "url": url_for("cit_citas.detail", cit_cita_id=cita.id),
                 },
-                "horario": cita.inicio.strftime("%Y-%m-%d %H:%M") + " - " + cita.termino.strftime("%Y-%m-%d %H:%M"),
+                "horario": cita.inicio.strftime("%Y-%m-%d %H:%M") + " -<br>" + cita.termino.strftime("%Y-%m-%d %H:%M"),
+                "cliente": cita.cit_cliente.nombre,
+                "notas": cita.notas,
                 "estado": cita.estado,
                 "servicio": cita.cit_servicio.descripcion,
             }
@@ -60,11 +67,23 @@ def datatable_json():
 @cit_citas.route("/cit_citas")
 def list_active():
     """Listado de Citas activas"""
+    oficina = None
+    distrito = None
+    filtros = {"estatus": "A"}
+
+    if not current_user.can_admin(MODULO):
+        oficina = Oficina.query.get_or_404(current_user.oficina_id)
+        distrito = Distrito.query.get_or_404(oficina.distrito_id)
+        filtros["oficina_id"] = oficina.id
+
     return render_template(
         "cit_citas/list.jinja2",
-        filtros=json.dumps({"estatus": "A"}),
+        filtros=json.dumps(filtros),
         titulo="Citas",
         estatus="A",
+        fecha=datetime.today(),
+        oficina=oficina,
+        distrito=distrito,
     )
 
 
@@ -72,11 +91,23 @@ def list_active():
 @permission_required(MODULO, Permiso.MODIFICAR)
 def list_inactive():
     """Listado de Citas inactivas"""
+    oficina = None
+    distrito = None
+    filtros = {"estatus": "A"}
+
+    if not current_user.can_admin(MODULO):
+        oficina = Oficina.query.get_or_404(current_user.oficina_id)
+        distrito = Distrito.query.get_or_404(oficina.distrito_id)
+        filtros["oficina_id"] = oficina.id
+
     return render_template(
         "cit_citas/list.jinja2",
         filtros=json.dumps({"estatus": "B"}),
         titulo="Citas inactivas",
         estatus="B",
+        fecha=datetime.today(),
+        oficina=oficina,
+        distrito=distrito,
     )
 
 
