@@ -2,6 +2,7 @@
 {% import 'macros/detail.jinja2' as detail %}
 {% import 'macros/modals.jinja2' as modals %}
 {% import 'macros/topbar.jinja2' as topbar %}
+{% import 'macros/list.jinja2' as list %}
 
 {% block title %}Clientes{% endblock %}
 
@@ -19,8 +20,42 @@
         {{ detail.label_value('Renovación', moment(cit_cliente.renovacion).format('ll')) }}
         {{ detail.label_value('Creado', moment(cit_cliente.creado).format('llll')) }}
     {% endcall %}
+    {% call list.card("Citas") %}
+        <table id="cit_citas_datatable" class="table {% if estatus == 'B'%}table-dark{% endif %} display nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Horario</th>
+                    <th>Servicio</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+        </table>
+    {% endcall %}
 {% endblock %}
 
 {% block custom_javascript %}
     {{ detail.moment_js(moment) }}
+
+    {{ list.config_datatable() }}
+    <script>
+        configDataTable['ajax']['url'] = '/cit_citas/datatable_json';
+        configDataTable['ajax']['data'] = {{ filtros }};
+        configDataTable['columns'] = [
+            { data: "detalle" },
+            { data: "horario" },
+            { data: "servicio" },
+            { data: "estado" },
+        ];
+        configDataTable['columnDefs'] = [
+            {
+                targets: 0, // detalle
+                data: null,
+                render: function(data, type, row, meta) {
+                    return '<a href="' + data.url + '">' + data.id + '</a>';
+                }
+            }
+        ];
+        $('#cit_citas_datatable').DataTable(configDataTable);
+    </script>
 {% endblock %}

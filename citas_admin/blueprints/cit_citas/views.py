@@ -46,6 +46,8 @@ def datatable_json():
         fecha_inicio = datetime.strptime(request.form["fecha"] + " 00:00:00", "%y-%m-%d %H:%M:%S")
         fecha_final = datetime.strptime(request.form["fecha"] + " 23:59:59", "%y-%m-%d %H:%M:%S")
         consulta = consulta.filter(CitCita.inicio >= fecha_inicio).filter(CitCita.inicio <= fecha_final)
+    if "cliente_id" in request.form:
+        consulta = consulta.filter_by(cit_cliente_id=request.form["cliente_id"])
     registros = consulta.order_by(CitCita.id.desc()).offset(start).limit(rows_per_page).all()
     total = consulta.count()
     # Elaborar datos para DataTable
