@@ -15,6 +15,8 @@ from citas_admin.blueprints.cit_citas.models import CitCita
 from citas_admin.blueprints.permisos.models import Permiso
 from citas_admin.blueprints.cit_clientes.models import CitCliente
 from citas_admin.blueprints.usuarios.decorators import permission_required
+from citas_admin.blueprints.distritos.models import Distrito
+from citas_admin.blueprints.oficinas.models import Oficina
 
 from citas_admin.blueprints.cit_citas.forms import CitCitaSearchForm
 
@@ -312,3 +314,37 @@ def search():
             estatus="A",
         )
     return render_template("cit_citas/search.jinja2", form=form_search)
+
+
+@cit_citas.route("/cit_citas/distritos")
+def list_distritos():
+    """Listado de Distritos"""
+    return render_template(
+        "cit_citas/list_distritos.jinja2",
+        distritos=Distrito.query.filter_by(es_distrito_judicial=True).filter_by(estatus="A").order_by(Distrito.nombre).all(),
+    )
+
+
+@cit_citas.route("/cit_citas/distrito/<int:distrito_id>")
+def list_oficinas(distrito_id):
+    """Listado de Oficinas de un distrito"""
+    distrito = Distrito.query.get_or_404(distrito_id)
+    return render_template(
+        "cit_citas/list_oficinas.jinja2",
+        distrito=distrito,
+        oficinas=Oficina.query.filter(Oficina.distrito == distrito).filter_by(estatus="A").filter_by(puede_agendar_citas=True).order_by(Oficina.clave).all(),
+    )
+
+
+@cit_citas.route("/cit_citas/oficina/<int:oficina_id>")
+def list_oficina_cit_citas(oficina_id):
+    """Listado de Citas activas de una Oficina"""
+    oficina = Oficina.query.get_or_404(oficina_id)
+    busqueda = {"estatus": "A"}
+    busqueda["oficina_id"] = oficina.id
+    return render_template(
+        "cit_citas/list_admin.jinja2",
+        filtros=json.dumps(busqueda),
+        titulo="Citas de la Oficina: " + oficina.clave,
+        estatus="A",
+    )

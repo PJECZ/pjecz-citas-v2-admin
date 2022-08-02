@@ -1,0 +1,37 @@
+{% extends 'layouts/app.jinja2' %}
+{% import 'macros/list.jinja2' as list %}
+{% import 'macros/topbar.jinja2' as topbar %}
+
+{% block title %}Citas - Oficinas{% endblock %}
+
+{% block topbar_actions %}
+    {% call topbar.page_buttons('Citas / Oficinas') %}
+        {{ topbar.button_previous('Distritos', url_for('cit_citas.list_distritos')) }}
+        {{ topbar.button_previous('Citas', url_for('cit_citas.list_active')) }}
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    {% call list.card() %}
+        <table id="oficinas_datatable" class="table display nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Claves</th>
+                    <th>Descripción Corta</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for oficina in oficinas %}
+                <tr>
+                    <td><a href="{{ url_for('cit_citas.list_oficina_cit_citas', oficina_id=oficina.id) }}">{{ oficina.clave }}</a></td>
+                    <td>{{ oficina.descripcion_corta }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endcall %}
+{% endblock %}
+
+{% block custom_javascript %}
+    {{ list.datatable('oficinas_datatable') }}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'layouts/app.jinja2' %}
+{% import 'macros/list.jinja2' as list %}
+{% import 'macros/topbar.jinja2' as topbar %}
+
+{% block title %}Citas - Distritos{% endblock %}
+
+{% block topbar_actions %}
+    {% call topbar.page_buttons('Citas / Distritos') %}
+        {{ topbar.button_previous('Citas', url_for('cit_citas.list_active')) }}
+    {% endcall %}
+{% endblock %}
+
+{% block content %}
+    {% call list.card() %}
+        <table class="table display nowrap">
+            <thead>
+                <tr>
+                    <th>Distritos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for distrito in distritos %}
+                <tr>
+                    <td><a href="{{ url_for('cit_citas.list_oficinas', distrito_id=distrito.id) }}">{{ distrito.nombre }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endcall %}
+{% endblock %}

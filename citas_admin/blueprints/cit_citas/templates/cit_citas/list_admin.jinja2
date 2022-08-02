@@ -6,6 +6,8 @@
 
 {% block topbar_actions %}
     {% call topbar.page_buttons(titulo) %}
+        {{ topbar.button_districts('Distritos', url_for('cit_citas.list_distritos')) }}
+        {{ topbar.button_search('Buscar', url_for('cit_citas.search')) }}
         {% if current_user.can_edit('CIT CITAS') %}
             {% if estatus == 'A' %}{{ topbar.button_list_inactive('Inactivos', url_for('cit_citas.list_inactive')) }}{% endif %}
             {% if estatus == 'B' %}{{ topbar.button_list_active('Activos', url_for('cit_citas.list_active')) }}{% endif %}
@@ -36,6 +38,8 @@
     {{ list.moment_js(moment) }}
     {{ list.config_datatable() }}
     <script>
+        const fecha_actual = new Date();
+
         configDataTable['ajax']['url'] = '/cit_citas/datatable_json';
         configDataTable['ajax']['data'] = {{ filtros }};
         configDataTable['columns'] = [
@@ -87,7 +91,7 @@
                 targets: 7, // Estado
                 data: null,
                 render: function(data, type, row, meta) {
-                    let color = "black";
+                    let color = "gray";
                     switch (data)    {
                         case "ASISTIO":     color = "#0b5345"; break;
                         case "PENDIENTE":   color = "#7d6608"; break;
@@ -97,9 +101,17 @@
                 }
             }
         ];
-        configDataTable['createdRow'] = function( row, data, dataIndex ){
+        configDataTable['createdRow'] = function( row, data, dataIndex, cells){
             switch (data.estado)    {
-                case "PENDIENTE": $(row).css("background-color", "#fef9e7");  break;
+                case "PENDIENTE":
+                    const fecha_cita = new Date(data.fecha);
+                    if(fecha_cita >= fecha_actual)  {
+                        $(row).css("background-color", "#fef9e7"); 
+                    } else {
+                        cells[7].innerText = 'VENCIDA';
+                        $(row).css("background-color", "#e9ecef");
+                    }
+                    break;
                 case "CANCELO":   $(row).css("background-color", "#fdedec");  break;
                 case "ASISTIO":   $(row).css("background-color", "#eafaf1");  break;
             }
