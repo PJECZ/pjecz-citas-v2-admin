@@ -24,6 +24,7 @@ OFICINAS_CSV = "seed/oficinas_v1_v2.csv"
 SERVICIOS_CSV = "seed/servicios_v1_v2.csv"
 CLIENTE_NO_DEFINIDO_EMAIL = "no_definido@nodefinido.com"
 CLIENTE_ID_NO_DEFINIDO = 0
+TOTAL_CITAS_V1 = 274661
 
 
 def main():
@@ -128,34 +129,23 @@ def main():
             cliente_id = encontrar_cliente(cita_v1["correo"])
             if cliente_id == CLIENTE_ID_NO_DEFINIDO:
                 counts["cliente_no_encontrado"] += 1
-            # print(
-            #     " ",
-            #     cita_v1["id"],
-            #     "|",
-            #     cita_v1["alta_fecha"],
-            #     "|",
-            #     fecha_inicio,
-            #     "|",
-            #     fecha_termino,
-            #     "|",
-            #     cita_v1["correo"],
-            #     "->",
-            #     "NO DEFINIDO" if cliente_id == CLIENTE_ID_NO_DEFINIDO else cliente_id,
-            #     "\n",
-            #     "  >>",
-            #     oficinas[juzgado_id_v1]["id_oficina_v2"],
-            #     ":",
-            #     oficinas[juzgado_id_v1]["nombre"][:30],
-            #     "|",
-            #     servicios[servicio_id_v1]["id_servicio_v2"],
-            #     ":",
-            #     servicios[servicio_id_v1]["nombre"][:25],
-            # )
-            if counts["exito"] % 2746 == 0:
-                print("citas insertadas {:,}".format(counts["exito"]))
-            # Hacer los insert en BD v2
+            # Impresión de muestras
+            if counts["exito"] % 888 == 0:
+                print("citas insertadas {:,}, {}%".format(counts["exito"], round((counts["exito"] * 100) / TOTAL_CITAS_V1)))
+            # Hacer el insert en BD v2
             if simulacion == False:
-                pass
+                CitCita(
+                    creado=cita_v1["alta_fecha"],
+                    modificado=cita_v1["alta_fecha"],
+                    cit_cliente_id=cliente_id,
+                    cit_servicio_id=servicios[servicio_id_v1]["id_servicio_v2"],
+                    oficina_id=oficinas[juzgado_id_v1]["id_oficina_v2"],
+                    inicio=fecha_inicio,
+                    termino=fecha_termino,
+                    codigo_asistencia="0000",
+                    estado="PENDIENTE",
+                    asistencia=False,
+                ).save()
 
             counts["exito"] += 1
         # Da el total de errores encontrados
@@ -169,6 +159,7 @@ def definir_cliente_no_definido():
     """Busca el registro del cliente no definido en la versión 2 y lo guarda en variable"""
     cliente = CitCliente.query.filter_by(email=CLIENTE_NO_DEFINIDO_EMAIL).first()
     if cliente:
+        global CLIENTE_ID_NO_DEFINIDO
         CLIENTE_ID_NO_DEFINIDO = cliente.id
         return True
     return False
