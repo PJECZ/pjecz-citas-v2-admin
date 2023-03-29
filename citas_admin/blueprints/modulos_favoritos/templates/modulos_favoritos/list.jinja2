@@ -10,6 +10,11 @@
 {% endblock %}
 
 {% block content %}
+    {% call list.card('Descripción') %}
+        <p>Este módulo le permite selecciona que módulos quiere que aparezcan al principio del menú lateral izquierdo.</p>
+        <p>Normalmente serían los más utilizados por usted. Sea libre de activarlos/desactivarlos presionando en el botón de la columna <strong>Estatus</strong>.
+        Después cuando cambie de página o actualice, notará que aparecen debajo del módulo de Favoritos ordenados por nombre.</p>
+    {% endcall %}
     {% call list.card() %}
         <table id="modulos_favoritos_datatable" class="table {% if estatus == 'B'%}table-dark{% endif %} display nowrap" style="width:100%">
             <thead>

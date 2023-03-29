@@ -1,24 +1,34 @@
 {
-    "versiones": [
+  "versiones": [
+    {
+      "numero": "1.2",
+      "fecha": "2023-03-29",
+      "novedades": [
         {
-            "numero": "1.1",
-            "fecha": "2022-09-12",
-            "novedades": [
-                {
-                    "titulo": "Mayor Acceso",
-                    "descripcion": "Se añadió la posibilidad de agregar citas inmediatas por parte de juzgado."
-                }
-            ]
-        },
-        {
-            "numero": "1.0",
-            "fecha": "2022-02-24",
-            "novedades": [
-                {
-                    "titulo": "En construcción",
-                    "descripcion": "Comienza el desarrollo de esta version."
-                }
-            ]
+          "titulo": "Favoritos",
+          "descripcion": "Integración del módulo para seleccionar los módulos más utilizados y que queden al principio de la lista de módulos del menú lateral izquierdo."
         }
-    ]
+      ]
+    },
+    {
+      "numero": "1.1",
+      "fecha": "2022-09-12",
+      "novedades": [
+        {
+          "titulo": "Mayor Acceso",
+          "descripcion": "Se añadió la posibilidad de agregar citas inmediatas por parte de juzgado."
+        }
+      ]
+    },
+    {
+      "numero": "1.0",
+      "fecha": "2022-02-24",
+      "novedades": [
+        {
+          "titulo": "En construcción",
+          "descripcion": "Comienza el desarrollo de esta version."
+        }
+      ]
+    }
+  ]
 }
