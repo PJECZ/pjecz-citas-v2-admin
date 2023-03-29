@@ -28,6 +28,7 @@
             <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse pjecz-bg-dark">
                 {% call navigation.menu(usuario_email=current_user.email) %}
                     {{ navigation.menu_option('Inicio', '/', 'mdi:view-dashboard') }}
+                    {{ navigation.menu_option('Favoritos', url_for("modulos_favoritos.list_active"), 'mdi:star') }}
                     {% for modulo in current_user.modulos_menu_principal %}
                         {{ navigation.menu_option(modulo.nombre_corto, modulo.ruta, modulo.icono) }}
                     {% endfor %}

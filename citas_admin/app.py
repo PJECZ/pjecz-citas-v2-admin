@@ -28,6 +28,7 @@ from citas_admin.blueprints.enc_sistemas.views import enc_sistemas
 from citas_admin.blueprints.entradas_salidas.views import entradas_salidas
 from citas_admin.blueprints.materias.views import materias
 from citas_admin.blueprints.modulos.views import modulos
+from citas_admin.blueprints.modulos_favoritos.views import modulos_favoritos
 from citas_admin.blueprints.municipios.views import municipios
 from citas_admin.blueprints.oficinas.views import oficinas
 from citas_admin.blueprints.pag_pagos.views import pag_pagos
@@ -80,6 +81,7 @@ def create_app():
     app.register_blueprint(entradas_salidas)
     app.register_blueprint(materias)
     app.register_blueprint(modulos)
+    app.register_blueprint(modulos_favoritos)
     app.register_blueprint(municipios)
     app.register_blueprint(oficinas)
     app.register_blueprint(pag_pagos)

@@ -23,6 +23,7 @@ class Modulo(db.Model, UniversalMixin):
 
     # Hijos
     bitacoras = db.relationship("Bitacora", back_populates="modulo")
+    modulos_favoritos = db.relationship("ModuloFavorito", back_populates="modulo")
     permisos = db.relationship("Permiso", back_populates="modulo")
 
     def __repr__(self):
